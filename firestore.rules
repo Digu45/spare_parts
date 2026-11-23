@@ -1,0 +1,12 @@
+rules_version = '2';
+
+// Each signed-in user can read and write ONLY their own shop's data
+// (shops/<their user id>/...). Everyone else - including anyone who finds the
+// app's address or the Firebase settings - gets "permission denied".
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /shops/{shopId}/{document=**} {
+      allow read, write: if request.auth != null && request.auth.uid == shopId;
+    }
+  }
+}

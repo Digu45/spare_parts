@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dashboard - Shree Narayani Auto Spare Parts</title>
+  <link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+
+  <header class="topbar">
+    <div class="topbar-in">
+      <div class="brand">
+        <span class="logo" aria-hidden="true">SN</span>
+        <div>
+          <b>Shree Narayani Auto Spare Parts</b>
+          <small>Main Road, Koge &middot; Dashboard</small>
+        </div>
+      </div>
+      <div class="topbar-actions">
+        <span id="cloudMount"></span>
+        <a class="btn primary big" href="bill.html">+ Make Bill</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+
+    <div id="demoBanner" class="banner" hidden>
+      <span><b>Sample data.</b> These are made-up bills so you can see how the dashboard looks. Your real bills are not affected.</span>
+      <button type="button" id="btnExitDemo" class="btn">Back to my bills</button>
+    </div>
+
+    <div id="cloudBanner" class="banner warn" hidden>
+      <span id="cloudBannerText"></span>
+      <button type="button" id="cloudBannerBtn" class="btn primary">Sign in</button>
+    </div>
+
+    <div id="backupBanner" class="banner warn" hidden>
+      <span id="backupBannerText"><b>Back up your bills.</b> They are stored in this browser only and are lost if its data is cleared.</span>
+      <span class="banner-actions">
+        <button type="button" id="btnBannerBackup" class="btn primary">Download backup</button>
+      </span>
+    </div>
+
+    <!-- Filters: one row above everything they scope -->
+    <section class="filters" aria-label="Period">
+      <div class="seg" id="periodSeg" role="group" aria-label="Choose period">
+        <button type="button" data-period="today">Today</button>
+        <button type="button" data-period="7d">7 days</button>
+        <button type="button" data-period="30d">30 days</button>
+        <button type="button" data-period="month">This month</button>
+        <button type="button" data-period="year">This year</button>
+        <button type="button" data-period="all">All time</button>
+      </div>
+      <span class="range-text" id="rangeText"></span>
+    </section>
+
+    <!-- Shown when there are no saved bills at all -->
+    <section id="emptyState" class="card empty-card" hidden>
+      <h2>No bills yet</h2>
+      <p>Make your first bill and save it. Your sales, best-selling parts and customers will show up here automatically.</p>
+      <p>Lost your bills after clearing the browser? Sign in to the online backup (top right) and they come back by themselves. Otherwise use <b>Restore</b> in the Backup &amp; Restore section below.</p>
+      <div class="empty-actions">
+        <a class="btn primary big" href="bill.html">+ Make Bill</a>
+        <button type="button" id="btnDemo" class="btn">Preview with sample data</button>
+      </div>
+    </section>
+
+    <div id="content">
+
+      <!-- KPIs -->
+      <section class="kpis" aria-label="Key numbers">
+        <article class="hero">
+          <div class="k-label">Total sales</div>
+          <div class="hero-val" id="kSales">&#8377;0</div>
+          <div class="delta" id="dSales"></div>
+        </article>
+        <div class="tiles">
+          <article class="tile">
+            <div class="k-label">Bills</div>
+            <div class="k-val" id="kBills">0</div>
+            <div class="delta" id="dBills"></div>
+          </article>
+          <article class="tile">
+            <div class="k-label">Average bill</div>
+            <div class="k-val" id="kAvg">&#8377;0</div>
+            <div class="delta" id="dAvg"></div>
+          </article>
+          <article class="tile">
+            <div class="k-label">Items sold</div>
+            <div class="k-val" id="kItems">0</div>
+            <div class="k-sub" id="sItems"></div>
+          </article>
+          <article class="tile">
+            <div class="k-label">Discount given</div>
+            <div class="k-val" id="kDisc">&#8377;0</div>
+            <div class="k-sub" id="sDisc"></div>
+          </article>
+          <article class="tile">
+            <div class="k-label">Customers</div>
+            <div class="k-val" id="kCust">0</div>
+            <div class="k-sub" id="sCust"></div>
+          </article>
+          <article class="tile">
+            <div class="k-label">Largest bill</div>
+            <div class="k-val" id="kMax">&#8377;0</div>
+            <div class="k-sub" id="sMax"></div>
+          </article>
+        </div>
+      </section>
+
+      <!-- Analysis -->
+      <section class="card" aria-labelledby="insHead">
+        <div class="card-head">
+          <div>
+            <h2 id="insHead">Analysis</h2>
+            <p class="sub">What the numbers say for this period</p>
+          </div>
+        </div>
+        <ul class="insights" id="insights"></ul>
+      </section>
+
+      <!-- Sales trend -->
+      <section class="card" data-card="trend">
+        <div class="card-head">
+          <div>
+            <h2>Sales trend</h2>
+            <p class="sub" id="trendSub"></p>
+          </div>
+          <button type="button" class="btn small toggle" aria-pressed="false">Table</button>
+        </div>
+        <div class="chart-host" id="trendChart"></div>
+        <div class="table-host" id="trendTable" hidden></div>
+      </section>
+
+      <div class="grid3">
+        <section class="card" data-card="items">
+          <div class="card-head">
+            <div>
+              <h2>Top items</h2>
+              <p class="sub">By sales amount</p>
+            </div>
+            <button type="button" class="btn small toggle" aria-pressed="false">Table</button>
+          </div>
+          <div class="chart-host" id="itemsChart"></div>
+          <div class="table-host" id="itemsTable" hidden></div>
+        </section>
+
+        <section class="card" data-card="customers">
+          <div class="card-head">
+            <div>
+              <h2>Top customers</h2>
+              <p class="sub">By sales amount</p>
+            </div>
+            <button type="button" class="btn small toggle" aria-pressed="false">Table</button>
+          </div>
+          <div class="chart-host" id="custChart"></div>
+          <div class="table-host" id="custTable" hidden></div>
+        </section>
+
+        <section class="card" data-card="weekday">
+          <div class="card-head">
+            <div>
+              <h2>Busiest days</h2>
+              <p class="sub" id="wdSub">Sales by day of the week</p>
+            </div>
+            <button type="button" class="btn small toggle" aria-pressed="false">Table</button>
+          </div>
+          <div class="chart-host" id="wdChart"></div>
+          <div class="table-host" id="wdTable" hidden></div>
+        </section>
+      </div>
+
+      <!-- Details -->
+      <section class="card" aria-labelledby="detHead">
+        <div class="card-head wrap-head">
+          <div>
+            <h2 id="detHead">Details</h2>
+            <p class="sub" id="detSub"></p>
+          </div>
+          <input id="q" type="search" placeholder="Search invoice, customer, phone or item" autocomplete="off" aria-label="Search details">
+        </div>
+        <div class="tabs" id="tabs" role="group" aria-label="Detail view">
+          <button type="button" data-tab="recent" class="active">Recent bills</button>
+          <button type="button" data-tab="customers">Customers</button>
+          <button type="button" data-tab="items">Items</button>
+        </div>
+        <div class="table-scroll" id="detTable"></div>
+      </section>
+
+    </div>
+
+    <!-- Backup & restore -->
+    <section class="card" id="backupCard" aria-labelledby="bkHead">
+      <div class="card-head">
+        <div>
+          <h2 id="bkHead">Backup &amp; Restore</h2>
+          <p class="sub">Bills are always kept in this browser on this computer. When online backup is on (sign in at the top right), every new bill is also saved online automatically, so nothing is lost if the browser is cleared or the computer is lost. A backup file is an extra copy you can restore from.</p>
+        </div>
+      </div>
+      <div class="bk-actions">
+        <button type="button" id="btnBackup" class="btn primary">Download backup</button>
+        <button type="button" id="btnRestore" class="btn">Restore from backup file</button>
+        <input type="file" id="fileRestore" accept=".json,application/json" hidden>
+      </div>
+      <p class="bk-info" id="backupInfo"></p>
+      <p class="bk-msg" id="backupMsg" role="status"></p>
+
+      <div class="auto-dl">
+        <label for="autoDlMode"><b>Backup file by itself</b> when a new bill is saved:</label>
+        <select id="autoDlMode">
+          <option value="every">After every new bill</option>
+          <option value="daily">Once a day</option>
+          <option value="off">Off</option>
+        </select>
+      </div>
+      <p class="bk-info">The file goes to this computer's Downloads folder, named with the date and time, so files add up: keep the newest and delete old ones now and then. In Chrome or Edge keep <i>"Ask where to save each file"</i> switched off in the download settings, otherwise a window pops up every time.</p>
+    </section>
+
+    <footer class="foot">
+      Reads the bills saved in this browser.
+      <button type="button" id="btnDemoLink" class="linkish">Preview with sample data</button>
+    </footer>
+  </main>
+
+  <div id="tooltip" class="tooltip" role="tooltip" hidden></div>
+
+  <script src="vendor/firebase/firebase-app-compat.js"></script>
+  <script src="vendor/firebase/firebase-auth-compat.js"></script>
+  <script src="vendor/firebase/firebase-firestore-compat.js"></script>
+  <script src="firebase-config.js"></script>
+  <script src="backup.js"></script>
+  <script src="cloud.js"></script>
+  <script src="dashboard.js"></script>
+</body>
+</html>

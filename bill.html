@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Shree Narayani Auto Spare Parts - Estimate Bill</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- ===== Toolbar (not printed) ===== -->
+  <header class="toolbar no-print">
+    <div class="brand">Shree Narayani <span>Billing</span></div>
+    <div class="actions">
+      <span id="cloudMount"></span>
+      <a class="btn" href="index.html">&larr; Dashboard</a>
+      <button type="button" id="btnNew">New Bill</button>
+      <button type="button" id="btnAddRow">+ Add Row</button>
+      <button type="button" id="btnSave">Save</button>
+      <button type="button" id="btnHistory">History</button>
+      <button type="button" id="btnPrint" class="primary">Print / PDF</button>
+    </div>
+  </header>
+
+  <main class="page">
+    <!-- ===== The bill ===== -->
+    <div class="sheet" id="sheet">
+
+      <!-- Shop header -->
+      <header class="shop">
+        <h1>SHREE NARAYANI AUTO SPARE PARTS</h1>
+        <div class="shop-line">Main Road, Koge</div>
+        <div class="shop-line">Phone : 9373947978</div>
+        <div class="shop-line">E-Mail : guravprashant035@gmail.com</div>
+        <div class="doc-title">ESTIMATE BILL</div>
+      </header>
+
+      <!-- Customer + invoice details -->
+      <section class="meta">
+        <div class="meta-left">
+          <div class="line">
+            <label for="custName">M/s</label>
+            <input id="custName" class="fill upper" list="custList" autocomplete="off" placeholder="Customer name">
+          </div>
+          <div class="line">
+            <label for="custPhone">Ph. No</label>
+            <input id="custPhone" class="fill" inputmode="tel" autocomplete="off" placeholder="Mobile number">
+          </div>
+        </div>
+
+        <div class="meta-right">
+          <label for="invNo">Invoice No</label>
+          <input id="invNo" class="fill bold" autocomplete="off">
+          <label for="billDate">Date</label>
+          <span class="date-cell">
+            <input id="billDate" class="fill" type="date">
+            <span class="pdate" id="billDateP"></span>
+          </span>
+
+          <label for="orderNo">Order No</label>
+          <input id="orderNo" class="fill" autocomplete="off">
+          <label for="dueDate">Due Date</label>
+          <span class="date-cell">
+            <input id="dueDate" class="fill" type="date">
+            <span class="pdate" id="dueDateP"></span>
+          </span>
+        </div>
+      </section>
+
+      <!-- Items -->
+      <section class="items" id="itemsWrap">
+        <table id="items">
+          <colgroup>
+            <col style="width:6%">
+            <col style="width:15%">
+            <col style="width:33%">
+            <col style="width:6%">
+            <col style="width:10%">
+            <col style="width:8%">
+            <col style="width:10%">
+            <col style="width:12%">
+          </colgroup>
+          <thead>
+            <tr>
+              <th>S.</th>
+              <th>Part.NO</th>
+              <th>Item Name</th>
+              <th class="num">Qty</th>
+              <th class="num">Rate</th>
+              <th class="num">Disc %</th>
+              <th class="num">Net</th>
+              <th class="num">Amount</th>
+            </tr>
+          </thead>
+          <tbody id="itemRows"></tbody>
+        </table>
+      </section>
+
+      <!-- Totals -->
+      <section class="totals">
+        <div class="tot-left">
+          <div class="out-line">
+            <span>Previous Outstanding :</span>
+            <input id="prevOut" class="fill num" inputmode="decimal" autocomplete="off" placeholder="0.00">
+          </div>
+          <div class="out-line strong">
+            <span>Total Outstanding :</span>
+            <b id="totalOut">0.00</b>
+          </div>
+          <div class="words" id="wordsLine"></div>
+        </div>
+
+        <div class="tot-right">
+          <div class="trow"><span>SUB TOTAL</span><b id="subTotal">0.00</b></div>
+          <div class="trow"><span>Discount</span><span id="discTotal">0.00</span></div>
+          <div class="trow"><span>Roundoff</span><span id="roundOff">0.00</span></div>
+          <div class="trow">
+            <span title="Credit / Debit note: enter a minus value for a credit note (returns), plus for a debit note">CR/DR NOTE</span>
+            <input id="crdr" class="fill num" inputmode="decimal" autocomplete="off" placeholder="0.00">
+          </div>
+          <div class="trow grand"><span>GRAND TOTAL</span><b id="grand">0.00</b></div>
+        </div>
+      </section>
+
+      <!-- Signatures -->
+      <section class="sign">
+        <div class="sign-top">
+          <div class="remark">
+            <label for="remark">Remark :</label>
+            <input id="remark" class="fill" autocomplete="off">
+          </div>
+          <div class="for">For <b>SHREE NARAYANI AUTO SPARE PARTS</b></div>
+        </div>
+        <div class="sign-bottom">
+          <span>Checked By</span>
+          <span>Receivers Signature</span>
+          <span>Authorised Signatory</span>
+        </div>
+      </section>
+
+      <footer class="foot">Thank you! Visit again.</footer>
+    </div>
+  </main>
+
+  <!-- Suggestions built from previously saved bills -->
+  <datalist id="partList"></datalist>
+  <datalist id="custList"></datalist>
+
+  <!-- ===== History dialog ===== -->
+  <dialog id="histDlg" class="no-print">
+    <div class="dlg-head">
+      <h2>Saved Bills</h2>
+      <button type="button" id="histClose" class="icon" aria-label="Close">&times;</button>
+    </div>
+    <div class="backup-box">
+      <div class="dlg-tools">
+        <button type="button" id="btnBackup">Download backup</button>
+        <button type="button" id="btnRestore">Restore backup</button>
+        <input type="file" id="fileRestore" accept=".json,application/json" hidden>
+      </div>
+      <p class="backup-info" id="backupInfo"></p>
+      <p class="backup-msg" id="backupMsg" role="status"></p>
+      <div class="auto-dl">
+        <label for="autoDlMode"><b>Backup file by itself</b> when a new bill is saved:</label>
+        <select id="autoDlMode">
+          <option value="every">After every new bill</option>
+          <option value="daily">Once a day</option>
+          <option value="off">Off</option>
+        </select>
+      </div>
+      <p class="backup-info">Saved to the Downloads folder (named with date and time). Keep the newest, delete old ones now and then. Keep <i>"Ask where to save each file"</i> off in the browser's download settings.</p>
+    </div>
+    <input id="histSearch" type="search" placeholder="Search by invoice no, customer or phone" autocomplete="off">
+    <div id="histList" class="hist-list"></div>
+  </dialog>
+
+  <div id="toast" class="toast no-print" role="status" aria-live="polite"></div>
+
+  <script src="vendor/firebase/firebase-app-compat.js"></script>
+  <script src="vendor/firebase/firebase-auth-compat.js"></script>
+  <script src="vendor/firebase/firebase-firestore-compat.js"></script>
+  <script src="firebase-config.js"></script>
+  <script src="backup.js"></script>
+  <script src="cloud.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
